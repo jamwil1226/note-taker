@@ -2,37 +2,40 @@ const PORT = process.env.PORT || 3001;
 const express = require('express');
 const app = express();
 
-const path = require("path");
 const fs = require("fs");
+const path = require("path");
 const notes = require("./db/db.json")
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
-currentID = notes.length;
 
 // API Routes
-app.get("/api/notes", function (req, res) {
-    
+app.get("/api/notes", (req, res) => {
+
     return res.json(notes);
 });
 
-app.post("/api/notes", function (req, res) {
-    var newNote = req.body;
+app.get('/api/notes/:id', (req, res) => {
+    const result = findById(req.params.id, notes);
+    if (result) {
+      res.json(result);
+    } else {
+      res.send(404);
+    }
+  });
 
-    newNote["id"] = currentID +1;
-    currentID++;
-    console.log(newNote);
+  app.post('/api/notes', (req, res) => {
+    // set id based on what the next index of the array will be
+    req.body.id = notes.length.toString();
 
-    notes.push(newNote);
+    res.json(req.body);
 
-    rewriteNotes();
+  });
 
-    return res.status(200).end();
-});
 
-app.delete("/api/notes/:id", function (req, res) {
+app.delete("/api/notes/:id", (req, res) => {
     res.send('DELETE request for /api/notes/:id')
 
     var id = req.params.id;
@@ -52,11 +55,11 @@ app.delete("/api/notes/:id", function (req, res) {
 
 
 // HTML Routes for index.html & notes.html
-app.get("/notes", function (req, res) {
+app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "public/notes.html"));
 });
 
-app.get("*", function (req, res) {
+app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
