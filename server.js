@@ -11,11 +11,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 
-// API Routes
-app.get("/api/notes", (req, res) => {
 
-    return res.json(notes);
-});
 
 app.get('/api/notes/:id', (req, res) => {
     const result = findById(req.params.id, notes);
@@ -26,14 +22,22 @@ app.get('/api/notes/:id', (req, res) => {
     }
   });
 
-  app.post('/api/notes', (req, res) => {
-    // set id based on what the next index of the array will be
-    req.body.id = notes.length.toString();
+app.post('/api/notes', (req, res) => {
+// set id based on what the next index of the array will be
+req.body.id = notes.length.toString();
 
-    res.json(req.body);
+res.json(req.body);
 
-  });
+});
 
+// API Routes
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "./public/index.html"));
+});
+
+app.get("/api/notes", (req, res) => {
+    res.sendFile(path.join(__dirname, './public/notes.html'));
+});
 
 app.delete("/api/notes/:id", (req, res) => {
     res.send('DELETE request for /api/notes/:id')
@@ -59,9 +63,6 @@ app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "public/notes.html"));
 });
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "public/index.html"));
-});
 
 
 
