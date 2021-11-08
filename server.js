@@ -1,46 +1,40 @@
-const PORT = process.env.PORT || 3001;
-const express = require('express');
-const app = express();
+var express = require("express");
+var path = require("path");
+var fs = require("fs");
+var notes = require("./db/db.json")
 
-const fs = require("fs");
-const path = require("path");
-const notes = require("./db/db.json")
+var app = express();
+var PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static("public"));
 
-
-
-
-app.get('/api/notes/:id', (req, res) => {
-    const result = findById(req.params.id, notes);
-    if (result) {
-      res.json(result);
-    } else {
-      res.send(404);
-    }
-  });
-
-app.post('/api/notes', (req, res) => {
-// set id based on what the next index of the array will be
-req.body.id = notes.length.toString();
-
-res.json(req.body);
-
-});
+currentID = notes.length;
 
 // API Routes
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "./public/index.html"));
-});
 
 app.get("/api/notes", (req, res) => {
-    res.sendFile(path.join(__dirname, './public/notes.html'));
+
+    return res.json(notes);
+});
+
+app.post("/api/notes", (req, res) => {
+    var newNote = req.body;
+
+    newNote["id"] = currentID +1;
+    currentID++;
+    console.log(newNote);
+
+    notes.push(newNote);
+
+    rewriteNotes();
+
+    return res.status(200).end();
 });
 
 app.delete("/api/notes/:id", (req, res) => {
-    res.send('DELETE request for /api/notes/:id')
+    res.send('Got a DELETE request at /api/notes/:id')
 
     var id = req.params.id;
 
@@ -58,15 +52,23 @@ app.delete("/api/notes/:id", (req, res) => {
 })
 
 
-// HTML Routes for index.html & notes.html
+// HTML Routes
+
 app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "public/notes.html"));
 });
 
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/index.html"));
+});
 
+// Listen for PORT
+app.listen(PORT, () => {
+    console.log(`API server now on port ${PORT}!`);
+});
 
+// Functions
 
-// Function to writeFile
 function rewriteNotes() {
     fs.writeFile("db/db.json", JSON.stringify(notes), function (err) {
         if (err) {
@@ -77,8 +79,3 @@ function rewriteNotes() {
         console.log("Success!");
     });
 }
-
-// Listen for PORT
-app.listen(PORT, () => {
-    console.log(`API server now on port ${PORT}!`);
-});
