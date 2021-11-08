@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-//Get Notes
+// API Routes
 app.get("/api/notes", (req, res) => {
 
     return res.json(notes);
@@ -18,7 +18,6 @@ app.get("/api/notes", (req, res) => {
 
 currentID = notes.length;
 
-//Write Notes
 app.post("/api/notes", (req, res) => {
     var newNote = req.body;
 
