@@ -10,15 +10,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-currentID = notes.length;
-
-// API Routes
-
+//Get Notes
 app.get("/api/notes", (req, res) => {
 
     return res.json(notes);
 });
 
+currentID = notes.length;
+
+//Write Notes
 app.post("/api/notes", (req, res) => {
     var newNote = req.body;
 
@@ -33,6 +33,7 @@ app.post("/api/notes", (req, res) => {
     return res.status(200).end();
 });
 
+// Delete Notes
 app.delete("/api/notes/:id", (req, res) => {
     res.send('Got a DELETE request at /api/notes/:id')
 
@@ -49,11 +50,9 @@ app.delete("/api/notes/:id", (req, res) => {
     notes = idLess.concat(idGreater);
 
     rewriteNotes();
-})
-
+});
 
 // HTML Routes
-
 app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "public/notes.html"));
 });
@@ -62,13 +61,7 @@ app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-// Listen for PORT
-app.listen(PORT, () => {
-    console.log(`API server now on port ${PORT}!`);
-});
-
-// Functions
-
+// Function to writeFile
 function rewriteNotes() {
     fs.writeFile("db/db.json", JSON.stringify(notes), function (err) {
         if (err) {
@@ -79,3 +72,8 @@ function rewriteNotes() {
         console.log("Success!");
     });
 }
+
+// Listen for PORT
+app.listen(PORT, () => {
+    console.log(`API server now on port ${PORT}!`);
+});
