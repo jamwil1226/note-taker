@@ -4,7 +4,7 @@
 
 ## Description
 
-#### This NOTE TAKER app allows the user to quickly and easily write and save notes.
+#### This NOTE TAKER app allows the user to quickly and easily write and save notes. This app utilizes HTML, CSS, JavaScript, Node.js, Express.js, JSON, Git, and Heroku.
 ![User Story](./public/assets/images/user-story.png)
 
 ## Table of Contents
